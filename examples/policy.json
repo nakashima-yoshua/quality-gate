@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "policy_id": "pilot-1",
+  "max_review_passes": 3,
+  "high_risk_paths": [
+    ".github/workflows/",
+    "auth/",
+    "security/",
+    "migrations/",
+    "scripts/release/"
+  ],
+  "required_checks": {
+    "LOW": ["repository_checks"],
+    "MEDIUM": ["build", "unit_tests"],
+    "HIGH": ["build", "unit_tests", "security_checks"]
+  }
+}
