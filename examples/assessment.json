@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "candidate": {
+    "repository": "demo/sample",
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "changed_files": [
+      "README.md"
+    ]
+  },
+  "risk": {
+    "minimum_tier": "LOW",
+    "unknown_material": false
+  },
+  "checks": [
+    {
+      "id": "repository_checks",
+      "status": "PASS",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "evidence": {
+        "path": "check.txt",
+        "sha256": "b7ab19961b0967a8c0b55e8a0fb4682f14f03f01e691e6b03ef576ddcaabfc43"
+      }
+    }
+  ],
+  "review": {
+    "status": "COMPLETE",
+    "reviewed_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "implementation_session": "synthetic-impl",
+    "review_session": "synthetic-review",
+    "passes": 1,
+    "evidence": {
+      "path": "review.txt",
+      "sha256": "2d0ea50f5a6d21f8ff60011cb94b12f5bc6be904ac383a372fa4c3214e4371d4"
+    },
+    "findings": []
+  }
+}
