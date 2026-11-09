@@ -13,7 +13,7 @@ The existing code readiness gate stays unchanged. Feature-map-workflow remains t
 | requirements | spec | Accepted requirements have independently derived acceptance test specs and expected results |
 | basic_design | spec | Relevant scenarios and integration boundaries have verifiable specs |
 | detailed_design | spec | Required unit/service/DB/integration behavior has verifiable specs |
-| implementation | run | Required unit/service/DB tests ran and have evidence |
+| implementation | run | Required unit/service/DB/integration/scenario tests ran and have evidence |
 | integration | run | Required integration/scenario tests ran and have evidence |
 | acceptance | run | Required acceptance/scenario tests ran and have evidence |
 
