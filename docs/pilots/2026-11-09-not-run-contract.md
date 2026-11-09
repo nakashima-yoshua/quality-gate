@@ -46,7 +46,9 @@ Collect these after actual execution, rather than filling estimated values:
 - Human active minutes, rework minutes, cost and comparison baseline (if measured).
 - Decision: `ACCEPT`, `REWORK`, or `HOLD`, with person/date and rationale.
 
-**Current status:** Implementation proposed. CI execution, independent PR review, integrated four-repository execution, time measurements, and human acceptance remain **NOT_VERIFIED** until observed.
+**Verified CI observation (candidate `045ab8b79a2ce31acaff2c9bc57fd038679ced1a`):** [GitHub Actions run 42609389047](https://github.com/nakashima-yoshua/quality-gate/actions/runs/42609389047), `unit-tests` **success**, 34 unit tests **OK**, and workflow compileall step successful. The five new regression tests are present in the job log. This observation covers repository tests only; it does not attest to external trusted evidence or reviewer independence.
+
+**Still NOT_VERIFIED:** Independent PR review, integrated four-repository execution, time/cost measurements, and human acceptance. CI must be rechecked for the final PR head after subsequent commits.
 
 ## Stop/rollback conditions
 
