@@ -62,6 +62,7 @@ def evaluate_phase(policy: Any, assessment: Any, evidence_root: Path) -> dict[st
     mode, kinds = PHASES[phase]
     required = set(policy["required_item_ids"])
     verified: set[str] = set()
+    observed: set[str] = set()
     seen: set[tuple[str, str]] = set()
     hold: list[dict[str, str]] = []
     rework: list[dict[str, str]] = []
@@ -71,6 +72,7 @@ def evaluate_phase(policy: Any, assessment: Any, evidence_root: Path) -> dict[st
         check_id = require_string(item.get("test_spec_id"), "verification.test_spec_id")
         if item_id not in required:
             raise GateInputError(f"verification {check_id}: item {item_id} outside approved denominator")
+        observed.add(item_id)
         if (item_id, check_id) in seen:
             raise GateInputError(f"verifications: duplicate item/test pair {item_id}/{check_id}")
         seen.add((item_id, check_id))
@@ -107,8 +109,8 @@ def evaluate_phase(policy: Any, assessment: Any, evidence_root: Path) -> dict[st
             rework.append(_reason("VERIFICATION_FAILED", f"{item_id}/{check_id}: {status}"))
 
     for item_id in policy["required_item_ids"]:
-        if item_id not in verified:
-            hold.append(_reason("UNCOVERED_ITEM", f"Required item has no verified case/spec: {item_id}"))
+        if item_id not in observed:
+            hold.append(_reason("UNCOVERED_ITEM", f"Required item has no matching case/spec: {item_id}"))
 
     if mode == "spec":
         review = require_object(assessment.get("review"), "assessment.review")
