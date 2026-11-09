@@ -11,8 +11,8 @@ from .engine import GateInputError, require_list, require_object, require_revisi
 PHASES: dict[str, tuple[str, frozenset[str]]] = {
     "requirements": ("spec", frozenset({"acceptance"})),
     "basic_design": ("spec", frozenset({"scenario", "integration"})),
-    "detailed_design": ("spec", frozenset({"unit", "service", "db", "integration"})),
-    "implementation": ("run", frozenset({"unit", "service", "db"})),
+    "detailed_design": ("spec", frozenset({"unit", "service", "db", "integration", "scenario"})),
+    "implementation": ("run", frozenset({"unit", "service", "db", "integration", "scenario"})),
     "integration": ("run", frozenset({"integration", "scenario"})),
     "acceptance": ("run", frozenset({"acceptance", "scenario"})),
 }
