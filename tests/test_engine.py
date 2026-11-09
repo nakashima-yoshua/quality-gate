@@ -225,6 +225,39 @@ class QualityGateTests(unittest.TestCase):
         self.assertEqual(exit_code, 2)
         self.assertEqual(json.loads(output.getvalue())["state"], "HOLD")
 
+    def test_not_run_check_needs_no_fake_revision_or_evidence(self):
+        self.assessment["checks"][0] = {"id": "build", "status": "NOT_RUN"}
+        report = self.result()
+        self.assertEqual(report["state"], "HOLD")
+        self.assertIn("CHECK_UNAVAILABLE", self.codes(report))
+        self.assertIs(report["ready_to_merge"], False)
+
+    def test_not_run_check_optional_stale_revision_is_detected(self):
+        self.assessment["checks"][0] = {
+            "id": "build", "status": "NOT_RUN", "head_sha": OTHER,
+        }
+        report = self.result()
+        self.assertEqual(report["state"], "HOLD")
+        self.assertIn("STALE_CHECK", self.codes(report))
+
+    def test_not_run_review_needs_no_fake_identity_or_evidence(self):
+        self.assessment["review"] = {"status": "NOT_RUN"}
+        report = self.result()
+        self.assertEqual(report["state"], "HOLD")
+        self.assertIn("REVIEW_UNAVAILABLE", self.codes(report))
+        self.assertIs(report["ready_to_merge"], False)
+
+    def test_complete_review_without_provenance_is_rejected(self):
+        self.assessment["review"] = {"status": "COMPLETE"}
+        with self.assertRaises(GateInputError):
+            self.result()
+
+    def test_pass_check_without_evidence_still_holds(self):
+        self.assessment["checks"][0].pop("evidence")
+        report = self.result()
+        self.assertEqual(report["state"], "HOLD")
+        self.assertIn("CHECK_EVIDENCE_INVALID", self.codes(report))
+
     @staticmethod
     def finding(category, disposition, identifier="ISS-1"):
         return {"id": identifier, "category": category, "disposition": disposition}

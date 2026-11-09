@@ -175,18 +175,24 @@ def evaluate(policy: Any, assessment: Any, evidence_root: Path) -> dict[str, Any
         status = item.get("status")
         if status not in STATUSES:
             raise GateInputError(f"checks.{check_id}: invalid status")
-        revision = require_revision(item.get("head_sha"), f"checks.{check_id}.head_sha")
-        if revision != head_sha:
-            hold.append(_reason("STALE_CHECK", f"{check_id} result targets another revision"))
-        if status in ("NOT_RUN", "BLOCKED", "ERROR"):
+        unavailable = status in ("NOT_RUN", "BLOCKED", "ERROR")
+        # No revision or artifact is required for an unexecuted check. If supplied,
+        # validate it anyway; missing observations must never turn into PASS.
+        if not unavailable or "head_sha" in item:
+            revision = require_revision(item.get("head_sha"), f"checks.{check_id}.head_sha")
+            if revision != head_sha:
+                hold.append(_reason("STALE_CHECK", f"{check_id} result targets another revision"))
+        if unavailable:
             hold.append(_reason("CHECK_UNAVAILABLE", f"{check_id}: {status}"))
         elif status == "FAIL":
             rework.append(_reason("CHECK_FAILED", f"{check_id}: FAIL"))
-        # Evidence is mandatory even for FAIL; absent evidence cannot prove a run.
-        try:
-            verify_evidence(item.get("evidence"), root, f"checks.{check_id}.evidence")
-        except GateInputError as error:
-            hold.append(_reason("CHECK_EVIDENCE_INVALID", str(error)))
+        # A completed result must carry evidence, including FAIL. Optional
+        # evidence for an unavailable check is still verified when supplied.
+        if not unavailable or "evidence" in item:
+            try:
+                verify_evidence(item.get("evidence"), root, f"checks.{check_id}.evidence")
+            except GateInputError as error:
+                hold.append(_reason("CHECK_EVIDENCE_INVALID", str(error)))
 
     review = require_object(assessment.get("review"), "assessment.review")
     review_status = review.get("status")
@@ -194,26 +200,35 @@ def evaluate(policy: Any, assessment: Any, evidence_root: Path) -> dict[str, Any
         raise GateInputError("review.status: invalid value")
     if review_status != "COMPLETE":
         hold.append(_reason("REVIEW_UNAVAILABLE", f"Independent review: {review_status}"))
-    reviewed_sha = require_revision(review.get("reviewed_sha"), "review.reviewed_sha")
-    if reviewed_sha != head_sha:
-        hold.append(_reason("STALE_REVIEW", "Review does not match candidate revision"))
-    implementer = require_string(review.get("implementation_session"), "review.implementation_session")
-    reviewer = require_string(review.get("review_session"), "review.review_session")
-    if implementer == reviewer:
+    complete = review_status == "COMPLETE"
+    if complete or "reviewed_sha" in review:
+        reviewed_sha = require_revision(review.get("reviewed_sha"), "review.reviewed_sha")
+        if reviewed_sha != head_sha:
+            hold.append(_reason("STALE_REVIEW", "Review does not match candidate revision"))
+    if complete or "implementation_session" in review:
+        implementer = require_string(review.get("implementation_session"), "review.implementation_session")
+    else:
+        implementer = None
+    if complete or "review_session" in review:
+        reviewer = require_string(review.get("review_session"), "review.review_session")
+    else:
+        reviewer = None
+    if implementer is not None and reviewer is not None and implementer == reviewer:
         hold.append(_reason("NON_INDEPENDENT_REVIEW", "Reviewer shares implementation session"))
-    passes = review.get("passes")
+    passes = review.get("passes", 0 if not complete else None)
     if type(passes) is not int or passes < 0:
         raise GateInputError("review.passes: expected non-negative integer")
     if passes > policy["max_review_passes"]:
         hold.append(_reason("REVIEW_BUDGET_EXCEEDED", "Review pass cap exceeded"))
-    if review_status == "COMPLETE" and passes == 0:
+    if complete and passes == 0:
         hold.append(_reason("REVIEW_NOT_PERFORMED", "Completed review requires one or more passes"))
-    try:
-        verify_evidence(review.get("evidence"), root, "review.evidence")
-    except GateInputError as error:
-        hold.append(_reason("REVIEW_EVIDENCE_INVALID", str(error)))
+    if complete or "evidence" in review:
+        try:
+            verify_evidence(review.get("evidence"), root, "review.evidence")
+        except GateInputError as error:
+            hold.append(_reason("REVIEW_EVIDENCE_INVALID", str(error)))
 
-    findings = require_list(review.get("findings"), "review.findings")
+    findings = require_list(review.get("findings", [] if not complete else None), "review.findings")
     seen: set[str] = set()
     for item in findings:
         finding = require_object(item, "review.findings entry")
