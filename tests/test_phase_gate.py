@@ -199,6 +199,10 @@ class PhaseGateTests(unittest.TestCase):
         with self.assertRaises(GateInputError):
             self.report()
 
+    def test_legacy_ui_implementation_can_use_scenario_evidence(self):
+        self.to_run("implementation", "scenario")
+        self.assertEqual(self.report()["state"], "READY_FOR_PHASE_APPROVAL")
+
     def test_run_evidence_ready_for_approval(self):
         self.to_run()
         self.assertEqual(self.report()["state"], "READY_FOR_PHASE_APPROVAL")
