@@ -1,0 +1,1 @@
+Synthetic acceptance test specification for REQ-001; demonstration only.
