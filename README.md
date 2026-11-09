@@ -4,6 +4,10 @@ An **offline, deterministic, fail-closed readiness gate** for AI-assisted code c
 
 The gate evaluates *the exact candidate revision* against a host-controlled policy, test-run evidence, and an independent-review record. A successful result is **`READY_FOR_HUMAN_REVIEW`**, never authorization to merge.
 
+## Optional verification-driven phase readiness
+
+A separate [phase gate](docs/phase-gates.md) evaluates whether the required verification specifications (requirements/design) or real test results (implementation/integration/acceptance) cover an approved change slice. Run `python -m quality_gate.phase_cli` with its own policy/assessment/evidence inputs. This is an **advisory readiness check**, not phase completion, PR merge authorization, or a replacement for the code readiness gate above.
+
 ## Ownership and boundaries
 
 | Component | Owner | Boundary |
