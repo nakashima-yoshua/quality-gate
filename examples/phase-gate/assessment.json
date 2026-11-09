@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "scope_id": "DEMO-001",
+  "phase": "requirements",
+  "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "verifications": [
+    {
+      "item_id": "REQ-001",
+      "test_spec_id": "AT-001",
+      "kind": "acceptance",
+      "status": "READY",
+      "basis_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "oracle_ref": "example-spec#expected",
+      "method_ref": "example-test#procedure",
+      "evidence": {
+        "path": "test-spec.txt",
+        "sha256": "006d5079a8fbd96deae77cbf4d80c90b3f2e96d8542e2fba6dc67c59ccd7e037"
+      }
+    }
+  ],
+  "review": {
+    "status": "COMPLETE",
+    "reviewer_ref": "synthetic-review-not-a-real-person",
+    "source_revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "evidence": {
+      "path": "review.txt",
+      "sha256": "e49e2138ba9f56806a71779751f7968e35a24ff10c0cce8c9287f5906f0b15f5"
+    }
+  },
+  "open_items": []
+}
