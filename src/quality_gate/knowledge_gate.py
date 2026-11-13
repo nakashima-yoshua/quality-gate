@@ -24,7 +24,7 @@ def bundle_digest(bundle: Path) -> str:
     bundle = bundle.resolve()
     digest = hashlib.sha256()
     total = 0
-    for path in sorted(bundle.rglob("*")):
+    for path in sorted(bundle.rglob("*"), key=lambda p: p.relative_to(bundle).as_posix()):
         if path.is_symlink():
             raise GateInputError(f"knowledge bundle symlink prohibited: {path}")
         if not path.is_file():
