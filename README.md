@@ -8,6 +8,16 @@ The gate evaluates *the exact candidate revision* against a host-controlled poli
 
 A separate [phase gate](docs/phase-gates.md) evaluates whether the required verification specifications (requirements/design) or real test results (implementation/integration/acceptance) cover an approved change slice. Run `python -m quality_gate.phase_cli` with its own policy/assessment/evidence inputs. This is an **advisory readiness check**, not phase completion, PR merge authorization, or a replacement for the code readiness gate above.
 
+## Optional OKF knowledge evidence gate
+
+An independent [OKF lint evidence adapter](docs/knowledge-lint-gate.md) reads the
+revision-bound JSON PASS report produced by `architecture-decision-system` and
+compares its file digest, report digest, and candidate SHA against values anchored
+by the host. Run `PYTHONPATH=src python -m quality_gate.knowledge_cli --help`
+for required options. This is an **advisory read-only gate**: a PASS can only
+produce `READY_FOR_HUMAN_REVIEW`, never merge approval or business truth.
+The primary code gate and optional phase gate remain unchanged.
+
 ## Ownership and boundaries
 
 | Component | Owner | Boundary |
