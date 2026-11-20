@@ -68,3 +68,7 @@ Risk is computed from **all** changed file paths, not only an AI-supplied tier. 
 5. Start with one representative non-production PR. Compare detected defects, false alarms, human time, and failure modes. Add parallel specialists only if measured benefit justifies their cost.
 
 Further design, threat model, mapped vendor learnings, tests and roadmap: [docs/architecture.md](docs/architecture.md).
+
+## Related repositories
+
+See [related repositories](docs/repository-relationships.md) for ownership and integration boundaries.
